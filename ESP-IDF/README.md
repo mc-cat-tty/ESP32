@@ -4,7 +4,7 @@ Code examples of ESP-IDF framework, used in combination with FreeRTOS
 
 ## Setting up
 
-### Add in _platformio.ini_
+### Add to _platformio.ini_
 
 ```
 [env:esp32doit-devkit-v1]
