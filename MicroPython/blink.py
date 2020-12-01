@@ -1,9 +1,15 @@
+"""
+Blink LED_PIN every 1 second and then print 'Done!'
+"""
+
+__author__ = "Francesco Mecatti"
+
 from machine import Pin
 import time
 
-PIN_NUM = 21
+LED_PIN = 21  # Change this value, it may be different for your board
 
-p = Pin(PIN_NUM, Pin.OUT)
+p = Pin(LED_PIN, Pin.OUT)
 
 for _ in range(20):
     p.on()
