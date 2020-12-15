@@ -68,5 +68,5 @@ extern "C" {
 
 void app_main(void){
     xTaskCreate(&buttonTask, "buttonTask", 2048, NULL, 1, NULL);
-    xTaskCreate(&ledTask, "ledTask", 1024, NULL, 1, NULL );
+    xTaskCreate(&ledTask, "ledTask", 1024, NULL, 1, NULL);
 }
