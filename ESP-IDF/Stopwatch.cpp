@@ -10,12 +10,25 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "driver/gpio.h"
+#include "driver/touch_pad.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-#define BUTTON_PIN  (gpio_num_t)    0
-#define LED_PIN     (gpio_num_t)    2
-#define TOUCH_PIN   (gpio_num_t)    4  // TOUCH0
+// Configuration section. Set to 1 if you want to enable that input device, 0 otherwise
+#define USE_BUTTON      (1)
+#define USE_TOUCHPAD    (1)
+#define USE_HALLSENSOR  (1)
+// True if one of the input is true
+#define eval_input(button_query, touchpad_query) ( (USE_BUTTON && buttonState == button_query) or (USE_TOUCHPAD && (((touch_pad_get_status() & BIT4) >> 4) == touchpad_query) && !touch_pad_clear_status()) )
+
+// Touchpad configuration parameters
+#define TOUCHPAD_FILTER_PERIOD  (10)
+#define TOUCHPAD_THRESH_NO_USE  (200)
+
+// Pin definition
+#define BUTTON_PIN  (gpio_num_t)    (0)
+#define LED_PIN     (gpio_num_t)    (2)
+#define TOUCH_PIN   (touch_pad_t)   (4)  // Touch0
 
 using namespace std;
 
@@ -132,24 +145,36 @@ class Time {
 
 // FSM to detect long and short press
 void buttonTask(void *pvParameter) {
+#if USE_BUTTON  // Button configuration
     gpio_set_direction(BUTTON_PIN, GPIO_MODE_INPUT);
     gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
     ButtonState buttonState;
+#endif
+
+#if USE_TOUCHPAD  // Touchpad configuration
+    touch_pad_init();
+    touch_pad_config(TOUCH_PIN, TOUCHPAD_THRESH_NO_USE);
+    touch_pad_filter_start(TOUCHPAD_FILTER_PERIOD);
+#endif
+
     FSMState state = IDLE;
     ctime_t startCentiseconds;
     Time t = *((Time *) pvParameter);
+
     // puts("Entered buttonTask");
     while (true) {
+#if USE_BUTTON
         buttonState = (ButtonState) gpio_get_level(BUTTON_PIN);
+#endif
         switch (state) {
             case IDLE:
                 // puts("stateIdle");
                 gpio_set_level(LED_PIN, (int) OFF);
-                if (buttonState == PRESSED) {
+                if (eval_input(PRESSED, 1)) {
                     startCentiseconds = t.getCentiseconds();
                     state = LAP;
                 }
-                else if (buttonState == RELEASED) {
+                else if (eval_input(RELEASED, 0)) {
                     ;;  // Do nothing
                 }
             break;
@@ -162,17 +187,17 @@ void buttonTask(void *pvParameter) {
                 }
                 else
                     t.addLap();
-                if (buttonState == PRESSED) {
+                if (eval_input(PRESSED, 1)) {
                     state = SHORT_PRESS;
                 }
-                else if (buttonState == RELEASED) {
+                else if (eval_input(RELEASED, 0)) {
                     state = IDLE;
                 }
             break;
             case SHORT_PRESS:
                 // puts("Short press");
                 gpio_set_level(LED_PIN, (int) ON);
-                if (buttonState == PRESSED) {
+                if (eval_input(PRESSED, 1)) {
                     if ((t.getCentiseconds() - startCentiseconds) < 0.5*100) {  // 0.5 secs; comparison in centisecs
                         ;; // Do nothing
                     }
@@ -180,28 +205,30 @@ void buttonTask(void *pvParameter) {
                         state = STOP_AND_RESET;
                     }
                 }
-                else if (buttonState == RELEASED) {
+                else if (eval_input(RELEASED, 0)) {
                     state = IDLE;
                 }
             break;
             case STOP_AND_RESET:
                 // puts("Stop and reset");
+                gpio_set_level(LED_PIN, (int) OFF);  // Quick blink to confirm reset
+                vTaskDelay(50 / portTICK_PERIOD_MS);
                 gpio_set_level(LED_PIN, (int) ON);
                 t.stop(); t.reset();
-                if (buttonState == PRESSED) {
+                if (eval_input(PRESSED, 1)) {
                     state = LONG_PRESS;
                 }
-                else if (buttonState == RELEASED) {
+                else if (eval_input(RELEASED, 0)) {
                     state = IDLE;
                 }
             break;
             case LONG_PRESS:
                 // puts("Long press");
                 gpio_set_level(LED_PIN, (int) ON);
-                if (buttonState == PRESSED) {
+                if (eval_input(PRESSED, 1)) {
                     ;; // Do nothing
                 }
-                else if (buttonState == RELEASED) {
+                else if (eval_input(RELEASED, 0)) {
                     state = IDLE;
                 }
             break;
