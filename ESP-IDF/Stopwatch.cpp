@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include "driver/gpio.h"
 #include "driver/touch_pad.h"
+#include "driver/adc.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
@@ -18,17 +19,24 @@
 #define USE_BUTTON      (1)
 #define USE_TOUCHPAD    (1)
 #define USE_HALLSENSOR  (1)
-// True if one of the input is true
-#define eval_input(button_query, touchpad_query) ( (USE_BUTTON && buttonState == button_query) or (USE_TOUCHPAD && (((touch_pad_get_status() & BIT4) >> 4) == touchpad_query) && !touch_pad_clear_status()) )
 
 // Touchpad configuration parameters
 #define TOUCHPAD_FILTER_PERIOD  (10)
 #define TOUCHPAD_THRESH_NO_USE  (200)
 
+// Hall-effect sensor config parameters
+#define HALL_MIN_THRESH_NO_USE (-45)
+#define HALL_MAX_THRESH_NO_USE (-25)
+
 // Pin definition
 #define BUTTON_PIN  (gpio_num_t)    (0)
 #define LED_PIN     (gpio_num_t)    (2)
 #define TOUCH_PIN   (touch_pad_t)   (4)  // Touch0
+
+// True if one of the input is true
+#define eval_input(button_query, touchpad_query, hallsensor_query)  (   (USE_BUTTON && buttonState == button_query) or \
+                                                                        (USE_TOUCHPAD && (((touch_pad_get_status() & BIT4) >> 4) == touchpad_query) && !touch_pad_clear_status()) or \
+                                                                        (USE_HALLSENSOR && (hall_sensor_read() < HALL_MIN_THRESH_NO_USE || hall_sensor_read() > HALL_MAX_THRESH_NO_USE) == hallsensor_query)    )
 
 using namespace std;
 
@@ -170,11 +178,11 @@ void buttonTask(void *pvParameter) {
             case IDLE:
                 // puts("stateIdle");
                 gpio_set_level(LED_PIN, (int) OFF);
-                if (eval_input(PRESSED, 1)) {
+                if (eval_input(PRESSED, 1, 1)) {
                     startCentiseconds = t.getCentiseconds();
                     state = LAP;
                 }
-                else if (eval_input(RELEASED, 0)) {
+                else if (eval_input(RELEASED, 0, 0)) {
                     ;;  // Do nothing
                 }
             break;
@@ -187,17 +195,17 @@ void buttonTask(void *pvParameter) {
                 }
                 else
                     t.addLap();
-                if (eval_input(PRESSED, 1)) {
+                if (eval_input(PRESSED, 1, 1)) {
                     state = SHORT_PRESS;
                 }
-                else if (eval_input(RELEASED, 0)) {
+                else if (eval_input(RELEASED, 0, 0)) {
                     state = IDLE;
                 }
             break;
             case SHORT_PRESS:
                 // puts("Short press");
                 gpio_set_level(LED_PIN, (int) ON);
-                if (eval_input(PRESSED, 1)) {
+                if (eval_input(PRESSED, 1, 1)) {
                     if ((t.getCentiseconds() - startCentiseconds) < 0.5*100) {  // 0.5 secs; comparison in centisecs
                         ;; // Do nothing
                     }
@@ -205,7 +213,7 @@ void buttonTask(void *pvParameter) {
                         state = STOP_AND_RESET;
                     }
                 }
-                else if (eval_input(RELEASED, 0)) {
+                else if (eval_input(RELEASED, 0, 0)) {
                     state = IDLE;
                 }
             break;
@@ -215,20 +223,20 @@ void buttonTask(void *pvParameter) {
                 vTaskDelay(50 / portTICK_PERIOD_MS);
                 gpio_set_level(LED_PIN, (int) ON);
                 t.stop(); t.reset();
-                if (eval_input(PRESSED, 1)) {
+                if (eval_input(PRESSED, 1, 1)) {
                     state = LONG_PRESS;
                 }
-                else if (eval_input(RELEASED, 0)) {
+                else if (eval_input(RELEASED, 0, 1)) {
                     state = IDLE;
                 }
             break;
             case LONG_PRESS:
                 // puts("Long press");
                 gpio_set_level(LED_PIN, (int) ON);
-                if (eval_input(PRESSED, 1)) {
+                if (eval_input(PRESSED, 1, 1)) {
                     ;; // Do nothing
                 }
-                else if (eval_input(RELEASED, 0)) {
+                else if (eval_input(RELEASED, 0, 1)) {
                     state = IDLE;
                 }
             break;
