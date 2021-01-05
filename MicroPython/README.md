@@ -127,8 +127,8 @@ This command doesn't work very well. See *main.py*
 
 #### Scripts execution order
 
-1. *[boot.py](http://boot.py)* → debug logs and WebREPL configuration
-2. *[main.py](http://main.py)* → Run after *[boot.py](http://boot.py)* (if exists)
+1. *boot.py* → debug logs and WebREPL configuration
+2. *main.py* → Run after *boot.py* (if exists)
 
 #### Import main script
 
@@ -138,7 +138,7 @@ Run in your desktop:
 ampy -p /dev/ttyUSBx -b 115200 put scriptname.py main.py
 ```
 
-*[main.py](http://main.py)* is the name of a special script: it is run after each boot (soft and hard boot)
+*main.py* is the name of a special script: it is run after each boot (soft and hard boot)
 
 To see stdout open serial connection and press RST button (or fire Ctrl+D to start soft boot):
 
@@ -172,7 +172,7 @@ You can navigate through files and directories using *os* module or *rshell* too
 import os
 ```
 
-Just as a real filesystem, the following operations are available:
+Just as in a real filesystem, the following operations are available:
 
 - Read a file
 
@@ -288,7 +288,7 @@ help
 
 #### Exit
 
-Lunch:
+Launch:
 
 ```bash
 exit
