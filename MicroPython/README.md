@@ -6,9 +6,7 @@ uPython for ESP32 code examples
 
 ## Introduction
 
-Official website:
-
-[MicroPython - Python for microcontrollers](https://micropython.org/)
+Official website: [MicroPython - Python for microcontrollers](https://micropython.org/)
 
 ### What is MicroPython?
 
@@ -20,7 +18,7 @@ Official website:
 
 - REPL **interactive prompt**
 
-    *MicroPython* provides an interactive Python interpreter, able to execute runtime commands. It runs in the bare-metal, without the need for additional components (like an OS)
+    *MicroPython* provides an interactive Python interpreter, able to execute runtime commands. It runs on the bare-metal, without the need for additional components (like an OS)
 
     REPL - Read Evaluate Print Loop - prompt is an useful tool for instructions prototyping and testing
 
@@ -42,7 +40,7 @@ Official website:
 
 1. Download the firmware
 
-    [](https://micropython.org/resources/firmware/esp32-idf3-20200902-v1.13.bin)
+    [MicroPyhton firmware download](https://micropython.org/resources/firmware/esp32-idf3-20200902-v1.13.bin)
 
 2. Intall *esptool*
 
@@ -53,13 +51,13 @@ Official website:
 3. Erase flash memory
 
     ```bash
-    sudo python3 -m esptool --port /dev/ttyUSB*x* erase_flash
+    sudo python3 -m esptool --port /dev/ttyUSBx erase_flash
     ```
 
 4. Flashare the firmware
 
     ```bash
-    python3 -m esptool --chip esp32 --port /dev/ttyUSB*x* write_flash -z 0x1000 *binary_firmware_path*
+    python3 -m esptool --chip esp32 --port /dev/ttyUSBx write_flash -z 0x1000 binary_firmware_path
     ```
 
 ### Testing
@@ -80,7 +78,7 @@ sudo dmesg
 
 Log related to the connection of USB-to-serial cp210x chip
 
-![MicroPython%20GitHub%2022ace8f77356465e95fd285faeef9f7f/Screenshot_20201130_190439.png](MicroPython%20GitHub%2022ace8f77356465e95fd285faeef9f7f/Screenshot_20201130_190439.png)
+![log_cp210x.png](log_cp210x.png)
 
 After the connection, a file will be created. Its name should be similar to */dev/ttyUSBx*
 
@@ -88,18 +86,18 @@ After the connection, a file will be created. Its name should be similar to */de
 
 #### Open serial port
 
-Run one of the following coomands
+Run one of the following commands
 
 ```bash
 sudo apt install screen
-sudo screen /dev/ttyUSB*x* 115200
+sudo screen /dev/ttyUSBx 115200
 ```
 
 Exit with: **Ctrl + a**, then **d**
 
 ```bash
 sudo apt install python3-serial
-sudo miniterm /dev/ttyUSB*x* 115200 --raw
+sudo miniterm /dev/ttyUSBx 115200 --raw
 ```
 
 Exit with: **Ctrl** + **]** ⇒ **Ctrl** + **Alt Gr** + **]**
@@ -118,10 +116,10 @@ putty
 
 ```bash
 sudo pip3 install adafruit-ampy
-ampy -p /dev/ttyUSB*x* -b 115200 run *scriptname.py*
+ampy -p /dev/ttyUSBx -b 115200 run *scriptname.py*
 ```
 
-This command doesn't work very well. See LINK
+This command doesn't work very well. See *main.py*
 
 ### Startup script
 
@@ -129,33 +127,33 @@ This command doesn't work very well. See LINK
 
 #### Scripts execution order
 
-1. *[boot.py](http://boot.py)* → debug logs and WebREPL configuration
-2. *[main.py](http://main.py)* → Run after *[boot.py](http://boot.py)* (if exists)
+1. *boot.py* → debug logs and WebREPL configuration
+2. *main.py* → Run after *boot.py* (if exists)
 
 #### Import main script
 
 Run in your desktop:
 
 ```bash
-ampy -p /dev/ttyUSB*x* -b 115200 put *scriptname.py* main.py
+ampy -p /dev/ttyUSBx -b 115200 put scriptname.py main.py
 ```
 
-*[main.py](http://main.py)* is the name of a special script: it is run after each boot (soft and hard boot)
+*main.py* is the name of a special script: it is run after each boot (soft and hard boot)
 
 To see stdout open serial connection and press RST button (or fire Ctrl+D to start soft boot):
 
 ```bash
-sudo miniterm /dev/ttyUSB*x* 115200 --raw
+sudo miniterm /dev/ttyUSBx 115200 --raw
 ```
 
 Press Ctrl+C to get back interactive prompt
 
-#### Eliminazione main script
+#### Main script deletion
 
 Run in your desktop:
 
 ```bash
-sudo ampy -p /dev/ttyUSB*x* -b 115200 rm main.py
+sudo ampy -p /dev/ttyUSBx -b 115200 rm main.py
 ```
 
 ### Documentation
@@ -174,48 +172,48 @@ You can navigate through files and directories using *os* module or *rshell* too
 import os
 ```
 
-Just as a real filesystem, the following operations are available:
+Just as in a real filesystem, the following operations are available:
 
 - Read a file
 
     ```python
-    print(open("*filename*").read())
+    print(open("filename").read())
     ```
 
 - Write on a file
 
     ```python
-    write(open("*filename*", "wa").write("*text*"))
+    write(open("filename", "wa").write("text"))
     ```
 
 - Delete a file
 
     ```python
-    os.remove('*filename*')
+    os.remove('filename')
     ```
 
 - Create a dir
 
     ```python
-    os.mkdir("*dirname*")
+    os.mkdir("dirname")
     ```
 
 - Delete a dir
 
     ```python
-    os.rmdidr('*dirname*')
+    os.rmdidr('dirname')
     ```
 
 - List a dir
 
     ```python
-    os.listdir('*path*')
+    os.listdir('path')
     ```
 
 - Change file/folder name
 
     ```python
-    os.rename('*oldname*', '*newname*')
+    os.rename('oldname', 'newname')
     ```
 
 ## rshell
@@ -235,13 +233,13 @@ sudo usermod -a -G dialout $USER
 ```
 
 ```bash
-sudo chown $USER /dev/ttyUSB*x*
+sudo chown $USER /dev/ttyUSBx
 ```
 
 ### Open connection
 
 ```bash
-rshell -p /dev/ttyUSB*x* -b 115200
+rshell -p /dev/ttyUSBx -b 115200
 ```
 
 Now *rshell* connection is opened, but we are not able to browse the virtual filesystem yet.
@@ -290,7 +288,7 @@ help
 
 #### Exit
 
-Lunch:
+Launch:
 
 ```bash
 exit
