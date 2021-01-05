@@ -18,7 +18,7 @@ Official website: [MicroPython - Python for microcontrollers](https://micropytho
 
 - REPL **interactive prompt**
 
-    *MicroPython* provides an interactive Python interpreter, able to execute runtime commands. It runs in the bare-metal, without the need for additional components (like an OS)
+    *MicroPython* provides an interactive Python interpreter, able to execute runtime commands. It runs on the bare-metal, without the need for additional components (like an OS)
 
     REPL - Read Evaluate Print Loop - prompt is an useful tool for instructions prototyping and testing
 
