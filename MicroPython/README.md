@@ -2,6 +2,21 @@
 
 uPython for ESP32 code examples
 
+## Timer Interrupt
+See:
+- https://docs.micropython.org/en/latest/library/machine.Timer.html
+- https://techtutorialsx.com/2017/10/07/esp32-micropython-timer-interrupts/
+
+Don't forget to disable (and then re-enable) *IRQ* while you are accessing a shared resource, this will prevent race conditions
+
+Instructions:
+```python
+state = machine.disable_irq()
+CENTS += 1  # Shared resource access
+machine.enable_irq(state)
+```
+
+
 # MicroPython overview
 
 ## Introduction
