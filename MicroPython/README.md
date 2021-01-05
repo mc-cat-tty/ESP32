@@ -116,10 +116,10 @@ putty
 
 ```bash
 sudo pip3 install adafruit-ampy
-ampy -p /dev/ttyUSB*x* -b 115200 run *scriptname.py*
+ampy -p /dev/ttyUSBx -b 115200 run *scriptname.py*
 ```
 
-This command doesn't work very well. See LINK
+This command doesn't work very well. See *main.py*
 
 ### Startup script
 
@@ -135,7 +135,7 @@ This command doesn't work very well. See LINK
 Run in your desktop:
 
 ```bash
-ampy -p /dev/ttyUSB*x* -b 115200 put *scriptname.py* main.py
+ampy -p /dev/ttyUSBx -b 115200 put scriptname.py main.py
 ```
 
 *[main.py](http://main.py)* is the name of a special script: it is run after each boot (soft and hard boot)
@@ -143,17 +143,17 @@ ampy -p /dev/ttyUSB*x* -b 115200 put *scriptname.py* main.py
 To see stdout open serial connection and press RST button (or fire Ctrl+D to start soft boot):
 
 ```bash
-sudo miniterm /dev/ttyUSB*x* 115200 --raw
+sudo miniterm /dev/ttyUSBx 115200 --raw
 ```
 
 Press Ctrl+C to get back interactive prompt
 
-#### Eliminazione main script
+#### Main script deletion
 
 Run in your desktop:
 
 ```bash
-sudo ampy -p /dev/ttyUSB*x* -b 115200 rm main.py
+sudo ampy -p /dev/ttyUSBx -b 115200 rm main.py
 ```
 
 ### Documentation
@@ -177,43 +177,43 @@ Just as a real filesystem, the following operations are available:
 - Read a file
 
     ```python
-    print(open("*filename*").read())
+    print(open("filename").read())
     ```
 
 - Write on a file
 
     ```python
-    write(open("*filename*", "wa").write("*text*"))
+    write(open("filename", "wa").write("text"))
     ```
 
 - Delete a file
 
     ```python
-    os.remove('*filename*')
+    os.remove('filename')
     ```
 
 - Create a dir
 
     ```python
-    os.mkdir("*dirname*")
+    os.mkdir("dirname")
     ```
 
 - Delete a dir
 
     ```python
-    os.rmdidr('*dirname*')
+    os.rmdidr('dirname')
     ```
 
 - List a dir
 
     ```python
-    os.listdir('*path*')
+    os.listdir('path')
     ```
 
 - Change file/folder name
 
     ```python
-    os.rename('*oldname*', '*newname*')
+    os.rename('oldname', 'newname')
     ```
 
 ## rshell
@@ -233,13 +233,13 @@ sudo usermod -a -G dialout $USER
 ```
 
 ```bash
-sudo chown $USER /dev/ttyUSB*x*
+sudo chown $USER /dev/ttyUSBx
 ```
 
 ### Open connection
 
 ```bash
-rshell -p /dev/ttyUSB*x* -b 115200
+rshell -p /dev/ttyUSBx -b 115200
 ```
 
 Now *rshell* connection is opened, but we are not able to browse the virtual filesystem yet.
