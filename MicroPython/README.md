@@ -6,9 +6,7 @@ uPython for ESP32 code examples
 
 ## Introduction
 
-Official website:
-
-[MicroPython - Python for microcontrollers](https://micropython.org/)
+Official website: [MicroPython - Python for microcontrollers](https://micropython.org/)
 
 ### What is MicroPython?
 
