@@ -40,7 +40,7 @@ Official website: [MicroPython - Python for microcontrollers](https://micropytho
 
 1. Download the firmware
 
-    [](https://micropython.org/resources/firmware/esp32-idf3-20200902-v1.13.bin)
+    [MicroPyhton fw download](https://micropython.org/resources/firmware/esp32-idf3-20200902-v1.13.bin)
 
 2. Intall *esptool*
 
@@ -51,13 +51,13 @@ Official website: [MicroPython - Python for microcontrollers](https://micropytho
 3. Erase flash memory
 
     ```bash
-    sudo python3 -m esptool --port /dev/ttyUSB*x* erase_flash
+    sudo python3 -m esptool --port /dev/ttyUSBx erase_flash
     ```
 
 4. Flashare the firmware
 
     ```bash
-    python3 -m esptool --chip esp32 --port /dev/ttyUSB*x* write_flash -z 0x1000 *binary_firmware_path*
+    python3 -m esptool --chip esp32 --port /dev/ttyUSBx write_flash -z 0x1000 binary_firmware_path
     ```
 
 ### Testing
