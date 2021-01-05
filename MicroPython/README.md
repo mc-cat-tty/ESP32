@@ -40,7 +40,7 @@ Official website: [MicroPython - Python for microcontrollers](https://micropytho
 
 1. Download the firmware
 
-    [MicroPyhton fw download](https://micropython.org/resources/firmware/esp32-idf3-20200902-v1.13.bin)
+    [MicroPyhton firmware download](https://micropython.org/resources/firmware/esp32-idf3-20200902-v1.13.bin)
 
 2. Intall *esptool*
 
