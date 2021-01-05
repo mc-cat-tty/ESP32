@@ -78,7 +78,7 @@ sudo dmesg
 
 Log related to the connection of USB-to-serial cp210x chip
 
-![MicroPython%20GitHub%2022ace8f77356465e95fd285faeef9f7f/Screenshot_20201130_190439.png](MicroPython%20GitHub%2022ace8f77356465e95fd285faeef9f7f/Screenshot_20201130_190439.png)
+![log_cp210x.png](log_cp210x.png)
 
 After the connection, a file will be created. Its name should be similar to */dev/ttyUSBx*
 
@@ -86,18 +86,18 @@ After the connection, a file will be created. Its name should be similar to */de
 
 #### Open serial port
 
-Run one of the following coomands
+Run one of the following commands
 
 ```bash
 sudo apt install screen
-sudo screen /dev/ttyUSB*x* 115200
+sudo screen /dev/ttyUSBx 115200
 ```
 
 Exit with: **Ctrl + a**, then **d**
 
 ```bash
 sudo apt install python3-serial
-sudo miniterm /dev/ttyUSB*x* 115200 --raw
+sudo miniterm /dev/ttyUSBx 115200 --raw
 ```
 
 Exit with: **Ctrl** + **]** ⇒ **Ctrl** + **Alt Gr** + **]**
