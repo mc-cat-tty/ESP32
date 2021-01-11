@@ -19,24 +19,42 @@ class State:
     STOP_AND_RESET = 4,
     LONG_PRESS = 5
 
+class queue:
+    def __init__(self):
+        self.items = list()
+    def enqueue(self, item):
+        self.items.append(item)
+    def dequeue(self):
+        return self.items.pop(0)
+    def is_empty(self):
+        return not self.items
+
+
 LED_PIN: int = 21  # External led. Change this value, it may be different for your board
 BUTTON_PIN: int = 0  # Internal BOOT button. Change this value, it may be different for your board
 CENTS: int = 0
 COUNTER_RUNNING: bool = False
+READY_TO_PRINT: bool = False
+VALUES_TO_PRINT: queue = queue()
 
-def printTime() -> None:
+def printTime(on_stdout=True) -> None:
     global CENTS
     t = utime.localtime(int(CENTS/100))
-    print("\rTime: %02d:%02d:%02d" % (t[3], t[4], t[5]), end="")
+    s: str = "\rTime: %02d:%02d:%02d" % (t[3], t[4], t[5])
+    if on_stdout:
+        print(s, end="")
+    else:
+        return s
 
 def printAddCents() -> None:  # Add centiseconds to the previous timestamp
     print(".%02d" % (CENTS%100), end="")
 
 def handleTimerInterrupt(timer: Timer) -> None:
-    global CENTS
+    global CENTS, READY_TO_PRINT, VALUES_TO_PRINT
     CENTS += 1
     if CENTS % 100 == 0:
-        printTime()
+        VALUES_TO_PRINT.enqueue(printTime(False))
+        READY_TO_PRINT = True
 
 async def buttonCoro(button: Pin, led: Pin) -> None:
     global CENTS, COUNTER_RUNNING
@@ -105,9 +123,21 @@ async def buttonCoro(button: Pin, led: Pin) -> None:
                 fms_state = State.IDLE
         await uasyncio.sleep_ms(5)
 
+async def printerCoro() -> None:
+    global READY_TO_PRINT, VALUES_TO_PRINT
+    while True:
+        state = disable_irq()
+        if READY_TO_PRINT:
+            while not VALUES_TO_PRINT.is_empty():
+                print(VALUES_TO_PRINT.dequeue(), end="")
+        READY_TO_PRINT = False
+        enable_irq(state)
+        await uasyncio.sleep_ms(1)
+
 async def main(buttonPin: Pin, ledPin: Pin) -> None:
     print("Entered main()")
     uasyncio.create_task(buttonCoro(buttonPin, ledPin))
+    uasyncio.create_task(printerCoro())
     loop = uasyncio.get_event_loop()  # Loop forever, otherwise the program would exit
     loop.run_forever()
     print("Created coroutines")
