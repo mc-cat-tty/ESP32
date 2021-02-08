@@ -1,5 +1,5 @@
 //
-// File ChangeFrequencyFSM.cpp
+// File ChangeFrequency.cpp
 // Author: Francesco Mecatti
 // FSM - Finite State Machine - to change blu led (LED 2) blink frequency with BOOT button (BUTTON 0)
 //
