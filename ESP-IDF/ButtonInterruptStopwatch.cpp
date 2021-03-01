@@ -161,7 +161,7 @@ typedef struct {
 #if USE_BUTTON
 ButtonState buttonState;
 
-// Negative edge interrupt handler (triggered while pressing)
+// Negative and positive edge interrupt handler (triggered when pressed or released)
 void buttonIsrHandler(void *pvParameters) {
     xSemaphoreGiveFromISR(xSemaphore, NULL);
     buttonState = (ButtonState) gpio_get_level(BUTTON_PIN);
