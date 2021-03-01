@@ -47,7 +47,7 @@ void buttonTask(void *pvParameters){
     gpio_isr_handler_add(BUTTON, buttonIsrHandler, NULL);
     printf("Pause: "); fflush(stdout);
     while(1) {
-        if(xSemaphoreTake(xSemaphore, portMAX_DELAY) == pdTRUE) {
+        if (xSemaphoreTake(xSemaphore, portMAX_DELAY) == pdTRUE) {
             if (pause == PAUSE_MAX || pause == PAUSE_MIN)
                 direction *= -1;
             if (direction > 0)
